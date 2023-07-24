@@ -15,6 +15,6 @@ namespace PayMetrix
         /// Default pass phrase for SimpleStringCipher decrypt/encrypt operations
         /// </summary>
         public static readonly string DefaultPassPhrase =
-            DebugHelper.IsDebug ? "gsKxGZ012HLL3MI5" : "e419eacf5062483dbb2d56f8aaa99b94";
+            DebugHelper.IsDebug ? "gsKxGZ012HLL3MI5" : "b511956c64fe444c938b29f333fea095";
     }
 }
