@@ -12,6 +12,8 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\PayMetrix.Application.Shared\PayMetrix.Application.Shared.csproj" />
     <ProjectReference Include="..\PayMetrix.Core\PayMetrix.Core.csproj" />
+    <ProjectReference Include="..\PayMetrix.EntityFrameworkCore\PayMetrix.EntityFrameworkCore.csproj" />
   </ItemGroup>
 </Project>

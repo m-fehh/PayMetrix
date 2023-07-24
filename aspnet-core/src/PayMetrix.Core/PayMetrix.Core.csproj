@@ -19,4 +19,8 @@
     <PackageReference Include="Abp.ZeroCore.EntityFrameworkCore" Version="8.1.0" />
     <PackageReference Include="Castle.Windsor.MsDependencyInjection" Version="3.4.0" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\PayMetrix.Application.Shared\PayMetrix.Application.Shared.csproj" />
+    <ProjectReference Include="..\..\PayMetrix.Core.Shared\PayMetrix.Core.Shared.csproj" />
+  </ItemGroup>
 </Project>
