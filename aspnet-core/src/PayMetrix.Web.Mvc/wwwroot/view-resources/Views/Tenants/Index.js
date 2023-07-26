@@ -156,7 +156,7 @@
         //        }
         //});
         abp.ajax({
-            url: abp.appPath + 'Account/ImpersonateTenant',
+            url: abp.appPath + 'Account/Impersonate',
             data: JSON.stringify({
                 tenantId: tenantId,
                 userId: 8,

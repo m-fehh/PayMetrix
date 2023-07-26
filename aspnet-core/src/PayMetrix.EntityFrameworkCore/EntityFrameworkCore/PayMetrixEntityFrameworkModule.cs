@@ -7,7 +7,7 @@ using PayMetrix.EntityFrameworkCore.Seed;
 namespace PayMetrix.EntityFrameworkCore
 {
     [DependsOn(
-        typeof(PayMetrixCoreModule), 
+        typeof(PayMetrixCoreModule),
         typeof(AbpZeroCoreEntityFrameworkCoreModule))]
     public class PayMetrixEntityFrameworkModule : AbpModule
     {

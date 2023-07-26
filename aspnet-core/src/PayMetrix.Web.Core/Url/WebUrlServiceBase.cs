@@ -14,9 +14,9 @@ namespace PayMetrix.Url
 
         public abstract string ServerRootAddressFormatKey { get; }
 
-        public string WebSiteRootAddressFormat => _appConfiguration[WebSiteRootAddressFormatKey] ?? "http://localhost:62114/";
+        public string WebSiteRootAddressFormat => _appConfiguration[WebSiteRootAddressFormatKey] ?? "https://localhost:44312/";
 
-        public string ServerRootAddressFormat => _appConfiguration[ServerRootAddressFormatKey] ?? "http://localhost:62114/";
+        public string ServerRootAddressFormat => _appConfiguration[ServerRootAddressFormatKey] ?? "https://localhost:44312/";
 
         public bool SupportsTenancyNameInUrl
         {
