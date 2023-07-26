@@ -43,6 +43,24 @@
         ]
     };
 
+    $(document).on('click', '#BackToImpersonator', function () {
+        var tenantId = $(this).attr('data-tenant-id');
+
+        BackToImpersonator();
+    });
+
+    function BackToImpersonator(tenantId) {
+
+        abp.ajax({
+            url: abp.appPath + 'Account/BackToImpersonator',
+            success: function () {
+                if (!app.supportsTenancyNameInUrl) {
+                    abp.multiTenancy.setTenantIdCookie(tenantId);
+                }
+            },
+        });
+    }
+
     var salesChartOptions = {
         //Boolean - If we should show the scale at all
         showScale: true,
