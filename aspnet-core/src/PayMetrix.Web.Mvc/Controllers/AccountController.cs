@@ -30,12 +30,18 @@ using PayMetrix.MultiTenancy;
 using PayMetrix.Sessions;
 using PayMetrix.Web.Models.Account;
 using PayMetrix.Web.Views.Shared.Components.TenantChange;
+using PayMetrix.Account.Dto;
+using PayMetrix.Authorization.Accounts;
+using PayMetrix.Authorization.Impersonation;
+using PayMetrix.Url;
 
 namespace PayMetrix.Web.Controllers
 {
     public class AccountController : PayMetrixControllerBase
     {
         private readonly UserManager _userManager;
+        private readonly IAccountAppService _accountAppService;
+        private readonly IWebUrlService _webUrlService;
         private readonly TenantManager _tenantManager;
         private readonly IMultiTenancyConfig _multiTenancyConfig;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
@@ -46,9 +52,12 @@ namespace PayMetrix.Web.Controllers
         private readonly ISessionAppService _sessionAppService;
         private readonly ITenantCache _tenantCache;
         private readonly INotificationPublisher _notificationPublisher;
+        private readonly IImpersonationManager _impersonationManager;
 
         public AccountController(
             UserManager userManager,
+            IAccountAppService accountAppService,
+            IWebUrlService webUrlService,
             IMultiTenancyConfig multiTenancyConfig,
             TenantManager tenantManager,
             IUnitOfWorkManager unitOfWorkManager,
@@ -57,10 +66,13 @@ namespace PayMetrix.Web.Controllers
             SignInManager signInManager,
             UserRegistrationManager userRegistrationManager,
             ISessionAppService sessionAppService,
+            IImpersonationManager impersonationManager,
             ITenantCache tenantCache,
             INotificationPublisher notificationPublisher)
         {
             _userManager = userManager;
+            _accountAppService = accountAppService;
+            _webUrlService = webUrlService;
             _multiTenancyConfig = multiTenancyConfig;
             _tenantManager = tenantManager;
             _unitOfWorkManager = unitOfWorkManager;
@@ -69,6 +81,7 @@ namespace PayMetrix.Web.Controllers
             _signInManager = signInManager;
             _userRegistrationManager = userRegistrationManager;
             _sessionAppService = sessionAppService;
+            _impersonationManager = impersonationManager;
             _tenantCache = tenantCache;
             _notificationPublisher = notificationPublisher;
         }
@@ -455,6 +468,48 @@ namespace PayMetrix.Web.Controllers
                  );
 
             return Content("Sent notification: " + message);
+        }
+
+        #endregion
+
+        #region Impersonation
+
+        //[AbpMvcAuthorize(AppPermissions.Pages_Administration_Users_Impersonation)]
+        public virtual async Task<JsonResult> Impersonate([FromBody] ImpersonateInput input)
+        {
+            var output = await _accountAppService.Impersonate(input);
+
+            await _signInManager.SignOutAsync();
+
+            return Json(new AjaxResponse
+            {
+                TargetUrl = _webUrlService.GetSiteRootAddress(output.TenancyName) + "Account/ImpersonateSignIn?tokenId=" + output.ImpersonationToken
+            });
+        }
+
+        [UnitOfWork]
+        public virtual async Task<ActionResult> ImpersonateSignIn(string tokenId)
+        {
+            var result = await _impersonationManager.GetImpersonatedUserAndIdentity(tokenId);
+            await _signInManager.SignInAsync(result.Identity, false);
+            return RedirectToAppHome();
+        }
+
+        public virtual JsonResult IsImpersonatedLogin()
+        {
+            return Json(new AjaxResponse { Result = AbpSession.ImpersonatorUserId.HasValue });
+        }
+
+        public virtual async Task<JsonResult> BackToImpersonator()
+        {
+            var output = await _accountAppService.BackToImpersonator();
+
+            await _signInManager.SignOutAsync();
+
+            return Json(new AjaxResponse
+            {
+                TargetUrl = _webUrlService.GetSiteRootAddress(output.TenancyName) + "Account/ImpersonateSignIn?tokenId=" + output.ImpersonationToken
+            });
         }
 
         #endregion
