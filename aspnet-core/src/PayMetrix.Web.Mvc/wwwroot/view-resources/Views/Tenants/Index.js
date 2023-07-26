@@ -1,4 +1,6 @@
 ﻿(function ($) {
+    /*var _accountService = abp.services.app.account;*/
+
     var _tenantService = abp.services.app.tenant,
         l = abp.localization.getSource('PayMetrix'),
         _$modal = $('#TenantCreateModal'),
@@ -48,6 +50,9 @@
                 sortable: false,
                 render: data => `<input type="checkbox" disabled ${data ? 'checked' : ''}>`
             },
+            /*                        `   <button type="button" class="btn btn-sm bg-secondary edit-tenant" data-tenant-id="${row.id}" data-toggle="modal" data-target="#TenantEditModal">`,
+                        `       <i class="fas fa-pencil-alt"></i> Personificar`,
+                        '   </button>' */
             {
                 targets: 4,
                 data: null,
@@ -55,6 +60,24 @@
                 autoWidth: false,
                 defaultContent: '',
                 render: (data, type, row, meta) => {
+                    console.log(row);
+
+                    return [
+                        `   <button type="button" style="margin-left: 30%" class="btn btn-primary btn-lg active impersonate-tenant" data-tenant-id="${row.id}" data-tenancy-name="${row.name}">`,
+                        `       <i class="fa fa-unlock-alt"></i> `,
+                        '   </button>'
+                    ].join('');
+                }
+            },
+            {
+                targets: 5,
+                data: null,
+                sortable: false,
+                autoWidth: false,
+                defaultContent: '',
+                render: (data, type, row, meta) => {
+                    console.log(row);
+
                     return [
                         `   <button type="button" class="btn btn-sm bg-secondary edit-tenant" data-tenant-id="${row.id}" data-toggle="modal" data-target="#TenantEditModal">`,
                         `       <i class="fas fa-pencil-alt"></i> ${l('Edit')}`,
@@ -92,11 +115,19 @@
             });
     });
 
+
+
     $(document).on('click', '.delete-tenant', function () {
         var tenantId = $(this).attr('data-tenant-id');
         var tenancyName = $(this).attr('data-tenancy-name');
 
         deleteTenant(tenantId, tenancyName);
+    });
+
+    $(document).on('click', '.impersonate-tenant', function () {
+        var tenantId = $(this).attr('data-tenant-id');
+
+        ImpersonateTenant(+tenantId);
     });
 
     $(document).on('click', '.edit-tenant', function (e) {
@@ -117,6 +148,26 @@
     abp.event.on('tenant.edited', (data) => {
         _$tenantsTable.ajax.reload();
     });
+
+    function ImpersonateTenant(tenantId) {
+        //_accountService.impersonateTenant({ tenantId: tenantId, userId: 1 }).done(function () {
+        //    if (!app.supportsTenancyNameInUrl) {
+        //            abp.multiTenancy.setTenantIdCookie(data.record.id);
+        //        }
+        //});
+        abp.ajax({
+            url: abp.appPath + 'Account/ImpersonateTenant',
+            data: JSON.stringify({
+                tenantId: tenantId,
+                userId: 8,
+            }),
+            success: function () {
+                if (!app.supportsTenancyNameInUrl) {
+                    abp.multiTenancy.setTenantIdCookie(tenantId);
+                }
+            },
+        });
+    }
 
     function deleteTenant(tenantId, tenancyName) {
         abp.message.confirm(
