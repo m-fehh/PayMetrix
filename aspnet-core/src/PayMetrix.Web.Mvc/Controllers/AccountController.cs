@@ -34,6 +34,8 @@ using PayMetrix.Account.Dto;
 using PayMetrix.Authorization.Accounts;
 using PayMetrix.Authorization.Impersonation;
 using PayMetrix.Url;
+using Abp.AspNetCore.Mvc.Caching;
+using Abp.CachedUniqueKeys;
 
 namespace PayMetrix.Web.Controllers
 {
@@ -52,6 +54,8 @@ namespace PayMetrix.Web.Controllers
         private readonly ISessionAppService _sessionAppService;
         private readonly ITenantCache _tenantCache;
         private readonly INotificationPublisher _notificationPublisher;
+        private readonly IGetScriptsResponsePerUserConfiguration _getScriptsResponsePerUserConfiguration;
+        private readonly ICachedUniqueKeyPerUser _cachedUniqueKeyPerUser;
         private readonly IImpersonationManager _impersonationManager;
 
         public AccountController(
@@ -68,6 +72,8 @@ namespace PayMetrix.Web.Controllers
             ISessionAppService sessionAppService,
             IImpersonationManager impersonationManager,
             ITenantCache tenantCache,
+            IGetScriptsResponsePerUserConfiguration getScriptsResponsePerUserConfiguration,
+            CachedUniqueKeyPerUser cachedUniqueKeyPerUser,
             INotificationPublisher notificationPublisher)
         {
             _userManager = userManager;
@@ -83,6 +89,8 @@ namespace PayMetrix.Web.Controllers
             _sessionAppService = sessionAppService;
             _impersonationManager = impersonationManager;
             _tenantCache = tenantCache;
+            _getScriptsResponsePerUserConfiguration = getScriptsResponsePerUserConfiguration;
+            _cachedUniqueKeyPerUser = cachedUniqueKeyPerUser;
             _notificationPublisher = notificationPublisher;
         }
 
@@ -490,6 +498,8 @@ namespace PayMetrix.Web.Controllers
         [UnitOfWork]
         public virtual async Task<ActionResult> ImpersonateSignIn(string tokenId)
         {
+            await ClearGetScriptsResponsePerUserCache();
+
             var result = await _impersonationManager.GetImpersonatedUserAndIdentity(tokenId);
             await _signInManager.SignInAsync(result.Identity, false);
             return RedirectToAppHome();
@@ -498,6 +508,16 @@ namespace PayMetrix.Web.Controllers
         public virtual JsonResult IsImpersonatedLogin()
         {
             return Json(new AjaxResponse { Result = AbpSession.ImpersonatorUserId.HasValue });
+        }
+
+        private async Task ClearGetScriptsResponsePerUserCache()
+        {
+            if (!_getScriptsResponsePerUserConfiguration.IsEnabled)
+            {
+                return;
+            }
+
+            await _cachedUniqueKeyPerUser.RemoveKeyAsync(GetScriptsResponsePerUserCache.CacheName);
         }
 
         public virtual async Task<JsonResult> BackToImpersonator()
