@@ -50,9 +50,6 @@
                 sortable: false,
                 render: data => `<input type="checkbox" disabled ${data ? 'checked' : ''}>`
             },
-            /*                        `   <button type="button" class="btn btn-sm bg-secondary edit-tenant" data-tenant-id="${row.id}" data-toggle="modal" data-target="#TenantEditModal">`,
-                        `       <i class="fas fa-pencil-alt"></i> Personificar`,
-                        '   </button>' */
             {
                 targets: 4,
                 data: null,
@@ -63,7 +60,7 @@
                     console.log(row);
 
                     return [
-                        `   <button type="button" style="margin-left: 30%" class="btn btn-primary btn-lg active impersonate-tenant" data-tenant-id="${row.id}" data-tenancy-name="${row.name}">`,
+                        `   <button type="button" style="margin-left: 30%" class="btn btn-primary btn-lg active impersonate-tenant-get-user" data-tenant-id="${row.id}" data-tenancy-name="${row.name}">`,
                         `       <i class="fa fa-unlock-alt"></i> `,
                         '   </button>'
                     ].join('');
@@ -115,19 +112,56 @@
             });
     });
 
+    $(document).on('click', '.impersonate-tenant-get-user', function () {
+        var tenantId = $(this).data('tenant-id');
 
+        abp.ajax({
+            url: abp.appPath + 'Tenants/GetUserByTenantId?tenantId=' + tenantId,
+            type: 'POST',
+            dataType: 'json',
+            success: function (data) {
+                $('#userListModal').modal('show');
+
+                console.log("SUCESSO", data);
+            },
+            error: function (e) {
+                console.error("ERRO", e);
+            }
+        });
+    });
+
+    $(document).on('click', '.impersonate-tenant', function () {
+        var tenantId = $(this).data('tenant-id');
+        var userId = $(this).data('user-id');
+
+        ImpersonateTenant(tenantId, userId);
+    });
+
+    function ImpersonateTenant(tenantId, userId) {
+        abp.ajax({
+            url: abp.appPath + 'Account/Impersonate',
+            data: JSON.stringify({
+                tenantId: tenantId,
+                userId: userId,
+            }),
+            success: function () {
+                if (!app.supportsTenancyNameInUrl) {
+                    abp.multiTenancy.setTenantIdCookie(tenantId);
+                }
+
+                console.log('Usuário com ID ' + userId + ' impersonado com sucesso!');
+            },
+            error: function (e) {
+                console.error('Erro ao impersonar usuário: ', e);
+            }
+        });
+    }
 
     $(document).on('click', '.delete-tenant', function () {
         var tenantId = $(this).attr('data-tenant-id');
         var tenancyName = $(this).attr('data-tenancy-name');
 
         deleteTenant(tenantId, tenancyName);
-    });
-
-    $(document).on('click', '.impersonate-tenant', function () {
-        var tenantId = $(this).attr('data-tenant-id');
-
-        ImpersonateTenant(+tenantId);
     });
 
     $(document).on('click', '.edit-tenant', function (e) {
@@ -149,25 +183,6 @@
         _$tenantsTable.ajax.reload();
     });
 
-    function ImpersonateTenant(tenantId) {
-        //_accountService.impersonateTenant({ tenantId: tenantId, userId: 1 }).done(function () {
-        //    if (!app.supportsTenancyNameInUrl) {
-        //            abp.multiTenancy.setTenantIdCookie(data.record.id);
-        //        }
-        //});
-        abp.ajax({
-            url: abp.appPath + 'Account/Impersonate',
-            data: JSON.stringify({
-                tenantId: tenantId,
-                userId: 8,
-            }),
-            success: function () {
-                if (!app.supportsTenancyNameInUrl) {
-                    abp.multiTenancy.setTenantIdCookie(tenantId);
-                }
-            },
-        });
-    }
 
     function deleteTenant(tenantId, tenancyName) {
         abp.message.confirm(
