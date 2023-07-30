@@ -1,0 +1,69 @@
+﻿@using PayMetrix.MultiTenancy.Dto
+@using PayMetrix.Web.Models.Common.Modals
+@using PayMetrix.Users.Dto
+@model List<UserDto>
+@{
+    Layout = null;
+}
+@await Html.PartialAsync("~/Views/Shared/Modals/_ModalHeader.cshtml", new ModalHeaderViewModel("Selecionar usuário"))
+
+<style>
+
+    /* Estilos personalizados para o modal */
+    .modal-dialog {
+        max-width: 600px; /* Definindo a largura máxima do modal */
+        border-radius: 10px; /* Adicionando bordas arredondadas */
+    }
+
+    .modal-content {
+        border-radius: 10px; /* Adicionando bordas arredondadas ao conteúdo do modal */
+    }
+
+    .modal-header {
+        background-color: #007bff; /* Mudando a cor de fundo do cabeçalho do modal */
+        color: #fff; /* Mudando a cor do texto no cabeçalho do modal */
+    }
+
+    .btn-primary {
+        background-color: #007bff; /* Mudando a cor do botão "Logar como usuário" */
+        border-color: #007bff;
+    }
+
+        .btn-primary:hover {
+            background-color: #0056b3; /* Mudando a cor de fundo do botão quando o mouse estiver sobre ele */
+            border-color: #0056b3;
+        }
+
+    /* Ajustando a largura da coluna do botão para que ele fique mais centralizado */
+    #userTable td:nth-child(3) {
+        width: 120px;
+        text-align: center; /* Centralizando o conteúdo (botão) na coluna */
+    }
+</style>
+
+<form name="TenantEditForm" role="form" class="form-horizontal">
+    <div class="modal-body">
+        <table id="userTable" class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Email</th>
+                    <th>Acessar</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model)
+                {
+                    <tr>
+                        <td>@user.Name</td>
+                        <td>@user.EmailAddress</td>
+                        <td>
+                            <button type="button" class="btn btn-primary impersonate-tenant" data-user-id="@user.Id" data-tenant-id="@user.TenantId"><i class="fa fa-unlock-alt"></i></button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</form>
+<script src="~/view-resources/Views/Tenants/Index.js" asp-append-version="true"></script>

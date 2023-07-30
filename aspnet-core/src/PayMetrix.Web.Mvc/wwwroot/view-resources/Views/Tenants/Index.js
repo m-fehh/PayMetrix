@@ -7,6 +7,11 @@
         _$form = _$modal.find('form'),
         _$table = $('#TenantsTable');
 
+    // Destruir a tabela DataTable, se já estiver inicializada
+    if ($.fn.DataTable.isDataTable('#TenantsTable')) {
+        $('#TenantsTable').DataTable().destroy();
+    }
+
     var _$tenantsTable = _$table.DataTable({
         paging: true,
         serverSide: true,
@@ -57,10 +62,8 @@
                 autoWidth: false,
                 defaultContent: '',
                 render: (data, type, row, meta) => {
-                    console.log(row);
-
                     return [
-                        `   <button type="button" style="margin-left: 30%" class="btn btn-primary btn-lg active impersonate-tenant-get-user" data-tenant-id="${row.id}" data-tenancy-name="${row.name}">`,
+                        `   <button type="button" style="margin-left: 30%" class="btn btn-primary btn-lg active impersonate-tenant-get-user" data-tenant-id="${row.id}" data-tenancy-name="${row.name}" data-toggle="modal" data-target="#GetUserModal">`,
                         `       <i class="fa fa-unlock-alt"></i> `,
                         '   </button>'
                     ].join('');
@@ -73,8 +76,6 @@
                 autoWidth: false,
                 defaultContent: '',
                 render: (data, type, row, meta) => {
-                    console.log(row);
-
                     return [
                         `   <button type="button" class="btn btn-sm bg-secondary edit-tenant" data-tenant-id="${row.id}" data-toggle="modal" data-target="#TenantEditModal">`,
                         `       <i class="fas fa-pencil-alt"></i> ${l('Edit')}`,
@@ -115,14 +116,19 @@
     $(document).on('click', '.impersonate-tenant-get-user', function () {
         var tenantId = $(this).data('tenant-id');
 
+
+
         abp.ajax({
             url: abp.appPath + 'Tenants/GetUserByTenantId?tenantId=' + tenantId,
             type: 'POST',
-            dataType: 'json',
-            success: function (data) {
-                $('#userListModal').modal('show');
+            dataType: 'html',
+            success: function (content) {
 
-                console.log("SUCESSO", data);
+                // Atualizar o conteúdo da modal com os dados retornados
+                $('#GetUserModal .modal-content').html(content);
+
+                // Exibir a modal
+                $('#GetUserModal').modal('show');
             },
             error: function (e) {
                 console.error("ERRO", e);
