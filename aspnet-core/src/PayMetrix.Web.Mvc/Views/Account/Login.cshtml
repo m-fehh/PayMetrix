@@ -1,68 +1,93 @@
 ﻿@using Abp.Authorization.Users
+@using Abp.Configuration.Startup
+@using Abp.Web.Security.AntiForgery
+@using PayMetrix
+@using PayMetrix.Web.Resources
 @model PayMetrix.Web.Models.Account.LoginFormViewModel
 @{
-    ViewBag.Title = L("LogIn");
+	ViewBag.Title = "Login";
+	//Layout = null;
 }
-@section scripts
-{
-    <environment names="Development">
-        <script src="~/view-resources/Views/Account/Login.js" asp-append-version="true"></script>
-    </environment>
 
-    <environment names="Staging,Production">
-        <script src="~/view-resources/Views/Account/Login.min.js" asp-append-version="true"></script>
-    </environment>
-}
-<h4 class="text-center">@L("LogIn")</h4>
-<form id="LoginForm" asp-action="Login" method="post">
-    <input type="hidden" name="returnUrl" value="@Model.ReturnUrl" />
-    <input type="hidden" name="returnUrlHash" />
-    <div class="input-group mb-3">
-        <input type="text" name="usernameOrEmailAddress" class="form-control" placeholder="@L("UserNameOrEmail")" required autofocus maxlength="@AbpUserBase.MaxEmailAddressLength">
-        <div class="input-group-append">
-            <div class="input-group-text">
-                <span class="fas fa-user"></span>
-            </div>
-        </div>
-    </div>
-    <div class="input-group mb-3">
-        <input type="password" class="form-control" name="Password" autocomplete="password" placeholder="@L("Password")" required maxlength="@AbpUserBase.MaxPlainPasswordLength">
-        <div class="input-group-append">
-            <div class="input-group-text">
-                <span class="fas fa-lock"></span>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-8">
-            <div class="icheck-primary">
-                <input type="checkbox" id="RememberMe" name="RememberMe" value="true">
-                <label for="RememberMe">
-                    @L("RememberMe")
-                </label>
-            </div>
-        </div>
-        <div class="col-4">
-            <button type="submit" id="LoginButton" class="btn btn-primary btn-block btn-flat">@L("LogIn")</button>
-        </div>
-    </div>
-</form>
-@*<div class="social-auth-links text-center mb-3">
-        <p>- OR -</p>
-        <a href="javascript:;" class="btn btn-block btn-primary">
-            <i class="fab fa-facebook mr-2"></i> Sign in using Facebook
-        </a>
-        <a href="javascript:;" class="btn btn-block btn-danger">
-            <i class="fab fa-google-plus mr-2"></i> Sign in using Google+
-        </a>
-    </div>*@
-<p class="mb-0">
-    @if (Model.IsSelfRegistrationAllowed)
-    {
-        <div class="row">
-            <div class="col-12">
-                <a asp-action="Register" class="text-center"><i class="fa fa-plus-circle"></i> @L("Register")</a>
-            </div>
-        </div>
+@section scripts
+	{
+	<environment names="Development">
+		<script src="~/view-resources/Views/Account/Login.js" asp-append-version="true"></script>
+	</environment>
+
+	<environment names="Staging,Production">
+		<script src="~/view-resources/Views/Account/Login.min.js" asp-append-version="true"></script>
+	</environment>
     }
-</p>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>@ViewBag.Title</title>
+	<!-- CSS PERSONALIZADO (Custom CSS) -->
+	<link rel="stylesheet" href="~/css/paymetrix/login.css">
+	<script src="~/js/paymetrix/login.js" defer></script>
+	<!-- FONT AWESOME -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+	<!-- FONTES DO GOOGLE (Google Fonts) -->
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+	<div class="container">
+		<div class="forms-container">
+			<div class="signin-signup">
+				<form id="LoginForm" asp-action="Login" method="post" class="sign-in-form">
+					<div class="logo-container">
+						@*<img src="~/img/logopm.png" alt="Logo PayMetrix" />*@
+					</div>
+					<input type="hidden" name="returnUrl" value="@Model.ReturnUrl" />
+					<input type="hidden" name="returnUrlHash" />
+					<div class="input-field mb-3">
+						<i class="fas fa-user input-group-text"></i>
+						<input type="text" name="usernameOrEmailAddress" class="form-control" placeholder="Nome de usuário" required autofocus maxlength="@AbpUserBase.MaxEmailAddressLength">
+					</div>
+					<div class="input-field mb-3">
+						<i class="fas fa-lock input-group-text"></i>
+						<input type="password" name="Password" class="form-control" autocomplete="current-password" placeholder="Senha" id="id_password" required maxlength="@AbpUserBase.MaxPlainPasswordLength">
+						<i class="far fa-eye" id="togglePassword" style="cursor: pointer;"></i>
+					</div>
+					<div class="row">
+						<div class="col-8">
+							<div class="icheck-primary">
+								<input type="checkbox" id="RememberMe" name="RememberMe" value="true">
+								<label for="RememberMe">
+									Lembrar-me
+								</label>
+							</div>
+						</div>
+						<div class="col-4">
+							<button type="submit" id="LoginButton" class="btn btn-primary btn-block btn-flat">Entrar</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		<div class="panels-container">
+			<div class="panel left-panel">
+				<div style="display: flex; justify-content: center;">
+					<div class="content">
+						<h2 style="font-weight: bold;">Maximize seus ganhos com nossa solução!</h2>
+						<br>
+						<p style="font-size: 13px; color:#ffffff;">Entre em contato com nossa equipe de especialistas em conciliação de transações com cartões e descubra como podemos impulsionar os resultados financeiros do seu negócio. Aumente sua eficiência e tome decisões mais assertivas para o sucesso da sua empresa.</p>
+					</div>
+				</div>
+				<div style="display: flex; justify-content: center;">
+					<img src="/img/conc.png" class="image" alt="">
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
+
+
