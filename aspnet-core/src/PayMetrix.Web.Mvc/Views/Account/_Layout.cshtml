@@ -27,19 +27,19 @@
 </head>
 <body class="hold-transition login-page">
 	<div class="login-box">
-		<div class="login-logo">
+@*		<div class="login-logo">
 			<a href="/"><b>PayMetrix</b></a>
-		</div>
+		</div>*@
 		<div class="card">
-			<div class="card-body login-card-body">
+@*			<div class="card-body login-card-body">
 				@if (MultiTenancyConfig.IsEnabled)
 				{
 					<div class="card-header">
 						<vc:tenant-change></vc:tenant-change>
 					</div>
 				}
+			</div>*@
 				@RenderBody()
-			</div>
 			<div class="card-footer">
 				<vc:account-languages></vc:account-languages>
 			</div>

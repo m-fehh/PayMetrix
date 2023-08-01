@@ -3,6 +3,7 @@
 @using Abp.Web.Security.AntiForgery
 @using PayMetrix
 @using PayMetrix.Web.Resources
+@inject IMultiTenancyConfig MultiTenancyConfig
 @model PayMetrix.Web.Models.Account.LoginFormViewModel
 @{
 	ViewBag.Title = "Login";
@@ -43,10 +44,16 @@
 			<div class="signin-signup">
 				<form id="LoginForm" asp-action="Login" method="post" class="sign-in-form">
 					<div class="logo-container">
-						@*<img src="~/img/logopm.png" alt="Logo PayMetrix" />*@
+						<img src="~/img/logo.png" alt="Logo PayMetrix" />
 					</div>
 					<input type="hidden" name="returnUrl" value="@Model.ReturnUrl" />
 					<input type="hidden" name="returnUrlHash" />
+					@if (MultiTenancyConfig.IsEnabled)
+					{
+						<div class="card-header">
+							<vc:tenant-change></vc:tenant-change>
+						</div>
+					}
 					<div class="input-field mb-3">
 						<i class="fas fa-user input-group-text"></i>
 						<input type="text" name="usernameOrEmailAddress" class="form-control" placeholder="Nome de usuário" required autofocus maxlength="@AbpUserBase.MaxEmailAddressLength">
