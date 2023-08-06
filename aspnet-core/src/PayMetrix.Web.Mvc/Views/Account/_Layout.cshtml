@@ -40,15 +40,15 @@
 				}
 			</div>*@
 				@RenderBody()
-			<div class="card-footer">
+@*			<div class="card-footer">
 				<vc:account-languages></vc:account-languages>
-			</div>
+			</div>*@
 		</div>
-		<div class="row">
+@*		<div class="row">
 			<div class="col-md-12 text-center">
 				<small>&copy; @DateTime.Now.Year PayMetrix. <b>Version </b> @AppVersionHelper.Version [@AppVersionHelper.ReleaseDate.ToString("yyyyMMdd")]</small>
 			</div>
-		</div>
+		</div>*@
 	</div>
 	@await Html.PartialAsync("_Scripts.cshtml")
 	@RenderSection("scripts", required: false)

@@ -728,7 +728,7 @@ form {
 }
 
     .modal-content h2 {
-        font-size: 1rem; /* Tamanho do título aumentado */
+        font-size: 1rem; 
         color: var(--title);
         margin-bottom: 20px;
         text-align: center;
@@ -737,7 +737,7 @@ form {
     .modal-content label {
 
         display: block;
-        font-size: 15px;
+        font-size: 18px;
         color: var(--input);
         margin-bottom: 10px;
     }
@@ -769,9 +769,8 @@ form {
 
 .modal-body  {
     font-size: 15px;
-    padding: 10px;
+    padding: 5px;
     text-align: center;
-    margin-top: 15px;
 }
 
     .close {
